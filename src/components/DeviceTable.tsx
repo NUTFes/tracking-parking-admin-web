@@ -157,34 +157,34 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
                       </TableCell>
                       <TableCell sx={{ color: "text.secondary" }}>{formatRelativeTime(device.last_seen_at)}</TableCell>
                       <TableCell align="right">
-                        <Tooltip title="集計開始">
+                        <Tooltip title={device.online ? "集計開始" : "デバイスがオフラインのため送信できません"}>
                           <span>
                             <IconButton
                               size="small"
                               color="success"
-                              disabled={pendingId !== null}
+                              disabled={pendingId !== null || !device.online}
                               onClick={() => requestCommand(device, "start_counting")}
                             >
                               <PlayCircleOutlineIcon fontSize="small" />
                             </IconButton>
                           </span>
                         </Tooltip>
-                        <Tooltip title="集計停止">
+                        <Tooltip title={device.online ? "集計停止" : "デバイスがオフラインのため送信できません"}>
                           <span>
                             <IconButton
                               size="small"
-                              disabled={pendingId !== null}
+                              disabled={pendingId !== null || !device.online}
                               onClick={() => requestCommand(device, "stop_counting")}
                             >
                               <PauseCircleOutlineIcon fontSize="small" />
                             </IconButton>
                           </span>
                         </Tooltip>
-                        <Tooltip title="再起動">
+                        <Tooltip title={device.online ? "再起動" : "デバイスがオフラインのため送信できません"}>
                           <span>
                             <IconButton
                               size="small"
-                              disabled={pendingId !== null}
+                              disabled={pendingId !== null || !device.online}
                               onClick={() => requestCommand(device, "restart")}
                             >
                               <RestartAltIcon fontSize="small" />
