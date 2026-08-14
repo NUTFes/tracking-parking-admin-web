@@ -35,6 +35,15 @@ type Props = {
   onError: (message: string) => void;
 };
 
+const COMMAND_DIALOG: Record<
+  CommandType,
+  { title: string; verb: string; confirmColor: "primary" | "warning" | "error" }
+> = {
+  restart: { title: "デバイスの再起動", verb: "再起動", confirmColor: "primary" },
+  start_counting: { title: "集計の開始", verb: "集計開始", confirmColor: "primary" },
+  stop_counting: { title: "集計の停止", verb: "集計停止", confirmColor: "warning" },
+};
+
 export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelete, onError }: Props) {
   const {
     pendingId,
@@ -45,13 +54,11 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
     setEditName,
     editParkingLotId,
     setEditParkingLotId,
-    restartTarget,
+    commandTarget,
     deleteTarget,
-    requestRestart,
-    cancelRestart,
-    confirmRestart,
-    startCounting,
-    stopCounting,
+    requestCommand,
+    cancelCommand,
+    confirmCommand,
     startEdit,
     cancelEdit,
     saveEdit,
@@ -158,7 +165,7 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
                               size="small"
                               color="success"
                               disabled={pendingId !== null}
-                              onClick={() => startCounting(device)}
+                              onClick={() => requestCommand(device, "start_counting")}
                             >
                               <PlayCircleOutlineIcon fontSize="small" />
                             </IconButton>
@@ -169,7 +176,7 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
                             <IconButton
                               size="small"
                               disabled={pendingId !== null}
-                              onClick={() => stopCounting(device)}
+                              onClick={() => requestCommand(device, "stop_counting")}
                             >
                               <PauseCircleOutlineIcon fontSize="small" />
                             </IconButton>
@@ -180,7 +187,7 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
                             <IconButton
                               size="small"
                               disabled={pendingId !== null}
-                              onClick={() => requestRestart(device)}
+                              onClick={() => requestCommand(device, "restart")}
                             >
                               <RestartAltIcon fontSize="small" />
                             </IconButton>
@@ -223,13 +230,17 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
       </TableContainer>
 
       <ConfirmDialog
-        open={restartTarget !== null}
-        title="デバイスの再起動"
-        description={`${restartTarget?.device_code} を再起動しますか？`}
-        confirmLabel="再起動"
-        confirmColor="primary"
-        onConfirm={confirmRestart}
-        onCancel={cancelRestart}
+        open={commandTarget !== null}
+        title={commandTarget ? COMMAND_DIALOG[commandTarget.commandType].title : ""}
+        description={
+          commandTarget
+            ? `${commandTarget.device.device_code} に${COMMAND_DIALOG[commandTarget.commandType].verb}を送信しますか？`
+            : ""
+        }
+        confirmLabel={commandTarget ? COMMAND_DIALOG[commandTarget.commandType].verb : ""}
+        confirmColor={commandTarget ? COMMAND_DIALOG[commandTarget.commandType].confirmColor : "primary"}
+        onConfirm={confirmCommand}
+        onCancel={cancelCommand}
       />
       <ConfirmDialog
         open={deleteTarget !== null}

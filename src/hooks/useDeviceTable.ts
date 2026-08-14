@@ -14,29 +14,20 @@ export function useDeviceTable({ onCommand, onUpdate, onDelete, onError }: Optio
   const [editDeviceCode, setEditDeviceCode] = useState("");
   const [editName, setEditName] = useState("");
   const [editParkingLotId, setEditParkingLotId] = useState("");
-  const [restartTarget, setRestartTarget] = useState<Device | null>(null);
+  const [commandTarget, setCommandTarget] = useState<{ device: Device; commandType: CommandType } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Device | null>(null);
 
-  const confirmRestart = async () => {
-    if (!restartTarget) return;
-    setPendingId(restartTarget.id);
-    try {
-      await onCommand(restartTarget.id, "restart");
-    } finally {
-      setPendingId(null);
-      setRestartTarget(null);
-    }
-  };
+  const requestCommand = (device: Device, commandType: CommandType) => setCommandTarget({ device, commandType });
+  const cancelCommand = () => setCommandTarget(null);
 
-  // Unlike restart (disruptive, so it goes through a confirm dialog),
-  // start/stop counting is a frequent, low-risk, reversible toggle — fire
-  // it directly.
-  const sendCountingCommand = async (device: Device, commandType: "start_counting" | "stop_counting") => {
-    setPendingId(device.id);
+  const confirmCommand = async () => {
+    if (!commandTarget) return;
+    setPendingId(commandTarget.device.id);
     try {
-      await onCommand(device.id, commandType);
+      await onCommand(commandTarget.device.id, commandTarget.commandType);
     } finally {
       setPendingId(null);
+      setCommandTarget(null);
     }
   };
 
@@ -88,13 +79,11 @@ export function useDeviceTable({ onCommand, onUpdate, onDelete, onError }: Optio
     setEditName,
     editParkingLotId,
     setEditParkingLotId,
-    restartTarget,
+    commandTarget,
     deleteTarget,
-    requestRestart: setRestartTarget,
-    cancelRestart: () => setRestartTarget(null),
-    confirmRestart,
-    startCounting: (device: Device) => sendCountingCommand(device, "start_counting"),
-    stopCounting: (device: Device) => sendCountingCommand(device, "stop_counting"),
+    requestCommand,
+    cancelCommand,
+    confirmCommand,
     startEdit,
     cancelEdit,
     saveEdit,
