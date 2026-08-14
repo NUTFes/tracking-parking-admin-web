@@ -67,7 +67,8 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onReset, onEr
               <TableCell>ID</TableCell>
               <TableCell>駐車場名</TableCell>
               <TableCell>収容台数</TableCell>
-              <TableCell>現在の駐車台数</TableCell>
+              <TableCell>現在の駐車台数（人力）</TableCell>
+              <TableCell>システム集計</TableCell>
               <TableCell align="right" />
             </TableRow>
           </TableHead>
@@ -105,6 +106,9 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onReset, onEr
                     )}
                   </TableCell>
                   <TableCell>{lot.current_count}</TableCell>
+                  <TableCell sx={{ color: "text.secondary" }}>
+                    {lot.has_device ? lot.system_count : "-"}
+                  </TableCell>
                   <TableCell align="right">
                     {isEditing ? (
                       <>
@@ -168,7 +172,7 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onReset, onEr
             })}
             {parkingLots.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ color: "text.secondary", py: 4 }}>
+                <TableCell colSpan={6} align="center" sx={{ color: "text.secondary", py: 4 }}>
                   登録済みの駐車場がありません
                 </TableCell>
               </TableRow>

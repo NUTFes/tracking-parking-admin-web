@@ -3,6 +3,8 @@ export type ParkingLot = {
   name: string;
   capacity: number;
   current_count: number;
+  system_count: number;
+  has_device: boolean;
   created_at: string;
 };
 
