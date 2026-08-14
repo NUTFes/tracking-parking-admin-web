@@ -68,16 +68,21 @@ export function useDashboard() {
     );
   };
 
+  // Resolves as soon as the command is queued (so callers — e.g. the confirm
+  // dialog — aren't left waiting on the slow part). Watching for the actual
+  // result happens in the background and only ever touches commandNotice.
   const handleDeviceCommand = async (deviceId: number, commandType: CommandType) => {
     const label = COMMAND_LABELS[commandType];
     showCommandNotice({ severity: "info", message: `${label}を送信しています…` });
+    let queued;
     try {
-      const queued = await api.queueCommand(deviceId, commandType, user?.email ?? "admin-console");
-      devices.refresh();
-      await pollCommandResult(deviceId, queued.id, label);
+      queued = await api.queueCommand(deviceId, commandType, user?.email ?? "admin-console");
     } catch (err) {
       showCommandNotice({ severity: "error", message: (err as Error).message }, COMMAND_NOTICE_CLEAR_MS);
+      return;
     }
+    devices.refresh();
+    void pollCommandResult(deviceId, queued.id, label);
   };
 
   const handleDeviceCreated = (device: DeviceCreated) => {

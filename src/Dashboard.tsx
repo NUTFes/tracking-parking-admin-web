@@ -1,4 +1,5 @@
-import { Alert, AppBar, Box, Button, Chip, Container, Snackbar, Stack, Toolbar, Typography } from "@mui/material";
+import { Alert, AppBar, Box, Button, Chip, Container, Slide, Snackbar, Stack, Toolbar, Typography } from "@mui/material";
+import type { SlideProps } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { ApiKeyReveal } from "./components/ApiKeyReveal";
 import { DeviceForm } from "./components/DeviceForm";
@@ -6,6 +7,10 @@ import { DeviceTable } from "./components/DeviceTable";
 import { ParkingLotForm } from "./components/ParkingLotForm";
 import { ParkingLotTable } from "./components/ParkingLotTable";
 import { useDashboard } from "./hooks/useDashboard";
+
+function SlideFromRight(props: SlideProps) {
+  return <Slide {...props} direction="left" />;
+}
 
 export function Dashboard() {
   const {
@@ -104,7 +109,8 @@ export function Dashboard() {
         open={notice !== null}
         autoHideDuration={6000}
         onClose={dismissNotice}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        slots={{ transition: SlideFromRight }}
       >
         <Alert severity="error" variant="filled" onClose={dismissNotice} sx={{ width: "100%" }}>
           {notice}
@@ -114,7 +120,8 @@ export function Dashboard() {
       <Snackbar
         open={commandNotice !== null}
         onClose={dismissCommandNotice}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        slots={{ transition: SlideFromRight }}
       >
         <Alert
           severity={commandNotice?.severity ?? "info"}
