@@ -1,4 +1,4 @@
-# トラパ 駐車場管理センター — Admin Web (tracking-parking-admin-web)
+# Tracking-Parking — Admin Web (tracking-parking-admin-web)
 
 React + Vite + MUI 製の管理コンソール。駐車場・エッジデバイスの登録／編集／削除、
 デバイス再起動コマンドの発行など、操作系の機能をまとめて持つ。ユーザー認証で保護されており、

@@ -34,7 +34,7 @@ export function Dashboard() {
         <Toolbar sx={{ py: 1.5 }}>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h6" component="h1" sx={{ fontWeight: 700 }}>
-              トラパ 管理コンソール
+              Tracking-Parking 管理コンソール
             </Typography>
             <Typography variant="caption" color="text.secondary">
               駐車場・エッジデバイスの登録、再起動などの管理操作

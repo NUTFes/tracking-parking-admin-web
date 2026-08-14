@@ -7,7 +7,7 @@ export function LoginForm() {
   return (
     <Box sx={{ maxWidth: 360, mx: "auto", mt: 12 }}>
       <Typography variant="h5" align="center" sx={{ fontWeight: 700, mb: 3 }}>
-        トラパ 管理コンソール
+        Tracking-Parking 管理コンソール
       </Typography>
       <Card variant="outlined" sx={{ borderRadius: 3 }}>
         <CardContent sx={{ p: 3 }}>
