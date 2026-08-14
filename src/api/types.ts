@@ -33,6 +33,12 @@ export type DeviceCreated = {
 export type CommandStatus = "pending" | "delivered" | "completed" | "failed";
 export type CommandType = "restart" | "start_counting" | "stop_counting";
 
+export const COMMAND_LABELS: Record<CommandType, string> = {
+  restart: "再起動",
+  start_counting: "集計開始",
+  stop_counting: "集計停止",
+};
+
 export type DeviceCommand = {
   id: number;
   device_id: number;

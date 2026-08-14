@@ -20,6 +20,8 @@ export function Dashboard() {
     notice,
     notifyError,
     dismissNotice,
+    commandNotice,
+    dismissCommandNotice,
     handleDeviceCommand,
     handleDeviceCreated,
     handleParkingLotUpdate,
@@ -106,6 +108,21 @@ export function Dashboard() {
       >
         <Alert severity="error" variant="filled" onClose={dismissNotice} sx={{ width: "100%" }}>
           {notice}
+        </Alert>
+      </Snackbar>
+
+      <Snackbar
+        open={commandNotice !== null}
+        onClose={dismissCommandNotice}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          severity={commandNotice?.severity ?? "info"}
+          variant="filled"
+          onClose={dismissCommandNotice}
+          sx={{ width: "100%" }}
+        >
+          {commandNotice?.message}
         </Alert>
       </Snackbar>
     </>

@@ -21,6 +21,7 @@ import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutlined";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutlined";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import type { CommandType, Device, ParkingLot } from "../api/types";
+import { COMMAND_LABELS } from "../api/types";
 import { formatRelativeTime } from "../lib/formatRelativeTime";
 import { useDeviceTable } from "../hooks/useDeviceTable";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -35,13 +36,10 @@ type Props = {
   onError: (message: string) => void;
 };
 
-const COMMAND_DIALOG: Record<
-  CommandType,
-  { title: string; verb: string; confirmColor: "primary" | "warning" | "error" }
-> = {
-  restart: { title: "デバイスの再起動", verb: "再起動", confirmColor: "primary" },
-  start_counting: { title: "集計の開始", verb: "集計開始", confirmColor: "primary" },
-  stop_counting: { title: "集計の停止", verb: "集計停止", confirmColor: "warning" },
+const COMMAND_DIALOG: Record<CommandType, { title: string; confirmColor: "primary" | "warning" | "error" }> = {
+  restart: { title: "デバイスの再起動", confirmColor: "primary" },
+  start_counting: { title: "集計の開始", confirmColor: "primary" },
+  stop_counting: { title: "集計の停止", confirmColor: "warning" },
 };
 
 export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelete, onError }: Props) {
@@ -234,10 +232,10 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
         title={commandTarget ? COMMAND_DIALOG[commandTarget.commandType].title : ""}
         description={
           commandTarget
-            ? `${commandTarget.device.device_code} に${COMMAND_DIALOG[commandTarget.commandType].verb}を送信しますか？`
+            ? `${commandTarget.device.device_code} に${COMMAND_LABELS[commandTarget.commandType]}を送信しますか？`
             : ""
         }
-        confirmLabel={commandTarget ? COMMAND_DIALOG[commandTarget.commandType].verb : ""}
+        confirmLabel={commandTarget ? COMMAND_LABELS[commandTarget.commandType] : ""}
         confirmColor={commandTarget ? COMMAND_DIALOG[commandTarget.commandType].confirmColor : "primary"}
         onConfirm={confirmCommand}
         onCancel={cancelCommand}
