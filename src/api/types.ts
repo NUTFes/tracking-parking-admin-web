@@ -31,11 +31,12 @@ export type DeviceCreated = {
 };
 
 export type CommandStatus = "pending" | "delivered" | "completed" | "failed";
+export type CommandType = "restart" | "start_counting" | "stop_counting";
 
 export type DeviceCommand = {
   id: number;
   device_id: number;
-  command_type: "restart";
+  command_type: CommandType;
   status: CommandStatus;
   requested_by: string | null;
   result_message: string | null;

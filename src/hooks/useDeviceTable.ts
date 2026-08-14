@@ -1,14 +1,14 @@
 import { useState } from "react";
-import type { Device } from "../api/types";
+import type { CommandType, Device } from "../api/types";
 
 type Options = {
-  onRestart: (deviceId: number) => Promise<void>;
+  onCommand: (deviceId: number, commandType: CommandType) => Promise<void>;
   onUpdate: (deviceId: number, input: { device_code: string; name: string; parking_lot_id: number }) => Promise<void>;
   onDelete: (deviceId: number) => Promise<void>;
   onError: (message: string) => void;
 };
 
-export function useDeviceTable({ onRestart, onUpdate, onDelete, onError }: Options) {
+export function useDeviceTable({ onCommand, onUpdate, onDelete, onError }: Options) {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editDeviceCode, setEditDeviceCode] = useState("");
@@ -21,10 +21,22 @@ export function useDeviceTable({ onRestart, onUpdate, onDelete, onError }: Optio
     if (!restartTarget) return;
     setPendingId(restartTarget.id);
     try {
-      await onRestart(restartTarget.id);
+      await onCommand(restartTarget.id, "restart");
     } finally {
       setPendingId(null);
       setRestartTarget(null);
+    }
+  };
+
+  // Unlike restart (disruptive, so it goes through a confirm dialog),
+  // start/stop counting is a frequent, low-risk, reversible toggle — fire
+  // it directly.
+  const sendCountingCommand = async (device: Device, commandType: "start_counting" | "stop_counting") => {
+    setPendingId(device.id);
+    try {
+      await onCommand(device.id, commandType);
+    } finally {
+      setPendingId(null);
     }
   };
 
@@ -81,6 +93,8 @@ export function useDeviceTable({ onRestart, onUpdate, onDelete, onError }: Optio
     requestRestart: setRestartTarget,
     cancelRestart: () => setRestartTarget(null),
     confirmRestart,
+    startCounting: (device: Device) => sendCountingCommand(device, "start_counting"),
+    stopCounting: (device: Device) => sendCountingCommand(device, "stop_counting"),
     startEdit,
     cancelEdit,
     saveEdit,

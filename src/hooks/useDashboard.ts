@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import type { DeviceCreated, ResetTarget } from "../api/types";
+import type { CommandType, DeviceCreated, ResetTarget } from "../api/types";
 import { usePolling } from "./usePolling";
 
 const POLL_INTERVAL_MS = 5000;
@@ -18,9 +18,9 @@ export function useDashboard() {
   const dismissNotice = () => setNotice(null);
   const dismissRevealedDevice = () => setRevealedDevice(null);
 
-  const handleRestart = async (deviceId: number) => {
+  const handleDeviceCommand = async (deviceId: number, commandType: CommandType) => {
     try {
-      await api.queueRestart(deviceId, user?.email ?? "admin-console");
+      await api.queueCommand(deviceId, commandType, user?.email ?? "admin-console");
       devices.refresh();
     } catch (err) {
       notifyError((err as Error).message);
@@ -82,7 +82,7 @@ export function useDashboard() {
     notice,
     notifyError,
     dismissNotice,
-    handleRestart,
+    handleDeviceCommand,
     handleDeviceCreated,
     handleParkingLotUpdate,
     handleParkingLotDelete,

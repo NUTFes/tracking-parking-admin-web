@@ -20,7 +20,7 @@ export function Dashboard() {
     notice,
     notifyError,
     dismissNotice,
-    handleRestart,
+    handleDeviceCommand,
     handleDeviceCreated,
     handleParkingLotUpdate,
     handleParkingLotDelete,
@@ -89,7 +89,7 @@ export function Dashboard() {
             <DeviceTable
               devices={devices.data ?? []}
               parkingLots={parkingLots.data ?? []}
-              onRestart={handleRestart}
+              onCommand={handleDeviceCommand}
               onUpdate={handleDeviceUpdate}
               onDelete={handleDeviceDelete}
               onError={notifyError}

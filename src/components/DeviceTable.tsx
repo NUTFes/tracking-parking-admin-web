@@ -17,8 +17,10 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import PauseCircleOutlineIcon from "@mui/icons-material/PauseCircleOutlined";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutlined";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import type { Device, ParkingLot } from "../api/types";
+import type { CommandType, Device, ParkingLot } from "../api/types";
 import { formatRelativeTime } from "../lib/formatRelativeTime";
 import { useDeviceTable } from "../hooks/useDeviceTable";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -27,13 +29,13 @@ import { StatusBadge } from "./StatusBadge";
 type Props = {
   devices: Device[];
   parkingLots: ParkingLot[];
-  onRestart: (deviceId: number) => Promise<void>;
+  onCommand: (deviceId: number, commandType: CommandType) => Promise<void>;
   onUpdate: (deviceId: number, input: { device_code: string; name: string; parking_lot_id: number }) => Promise<void>;
   onDelete: (deviceId: number) => Promise<void>;
   onError: (message: string) => void;
 };
 
-export function DeviceTable({ devices, parkingLots, onRestart, onUpdate, onDelete, onError }: Props) {
+export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelete, onError }: Props) {
   const {
     pendingId,
     editingId,
@@ -48,13 +50,15 @@ export function DeviceTable({ devices, parkingLots, onRestart, onUpdate, onDelet
     requestRestart,
     cancelRestart,
     confirmRestart,
+    startCounting,
+    stopCounting,
     startEdit,
     cancelEdit,
     saveEdit,
     requestDelete,
     cancelDelete,
     confirmDelete,
-  } = useDeviceTable({ onRestart, onUpdate, onDelete, onError });
+  } = useDeviceTable({ onCommand, onUpdate, onDelete, onError });
   const lotNameById = new Map(parkingLots.map((lot) => [lot.id, lot.name]));
 
   return (
@@ -148,6 +152,29 @@ export function DeviceTable({ devices, parkingLots, onRestart, onUpdate, onDelet
                       </TableCell>
                       <TableCell sx={{ color: "text.secondary" }}>{formatRelativeTime(device.last_seen_at)}</TableCell>
                       <TableCell align="right">
+                        <Tooltip title="集計開始">
+                          <span>
+                            <IconButton
+                              size="small"
+                              color="success"
+                              disabled={pendingId !== null}
+                              onClick={() => startCounting(device)}
+                            >
+                              <PlayCircleOutlineIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
+                        <Tooltip title="集計停止">
+                          <span>
+                            <IconButton
+                              size="small"
+                              disabled={pendingId !== null}
+                              onClick={() => stopCounting(device)}
+                            >
+                              <PauseCircleOutlineIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
                         <Tooltip title="再起動">
                           <span>
                             <IconButton

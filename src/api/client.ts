@@ -1,6 +1,7 @@
 import { getAccessToken, setAccessToken } from "./authToken";
 import type {
   AuthUser,
+  CommandType,
   Device,
   DeviceCommand,
   DeviceCreated,
@@ -129,10 +130,10 @@ export const api = {
     request<Device>(`/devices/${deviceId}`, { method: "PATCH", body: JSON.stringify(input) }),
   deleteDevice: (deviceId: number) => request<void>(`/devices/${deviceId}`, { method: "DELETE" }),
 
-  queueRestart: (deviceId: number, requestedBy: string) =>
+  queueCommand: (deviceId: number, commandType: CommandType, requestedBy: string) =>
     request<DeviceCommand>(`/devices/${deviceId}/commands`, {
       method: "POST",
-      body: JSON.stringify({ command_type: "restart", requested_by: requestedBy }),
+      body: JSON.stringify({ command_type: commandType, requested_by: requestedBy }),
     }),
   listCommands: (deviceId: number) => request<DeviceCommand[]>(`/devices/${deviceId}/commands`),
 };
