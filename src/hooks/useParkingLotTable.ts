@@ -4,15 +4,19 @@ import type { ParkingLot } from "../api/types";
 type Options = {
   onUpdate: (lotId: number, input: { name: string; capacity: number }) => Promise<void>;
   onDelete: (lotId: number) => Promise<void>;
+  onReset: (lotId: number, input: { count: number; note?: string }) => Promise<void>;
   onError: (message: string) => void;
 };
 
-export function useParkingLotTable({ onUpdate, onDelete, onError }: Options) {
+export function useParkingLotTable({ onUpdate, onDelete, onReset, onError }: Options) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [editCapacity, setEditCapacity] = useState("");
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ParkingLot | null>(null);
+  const [resetTarget, setResetTarget] = useState<ParkingLot | null>(null);
+  const [resetCount, setResetCount] = useState("");
+  const [resetNote, setResetNote] = useState("");
 
   const startEdit = (lot: ParkingLot) => {
     setEditingId(lot.id);
@@ -48,6 +52,27 @@ export function useParkingLotTable({ onUpdate, onDelete, onError }: Options) {
     }
   };
 
+  const requestReset = (lot: ParkingLot) => {
+    setResetTarget(lot);
+    setResetCount(String(lot.current_count));
+    setResetNote("");
+  };
+
+  const cancelReset = () => setResetTarget(null);
+
+  const confirmReset = async () => {
+    if (!resetTarget || !resetCount) return;
+    setPendingId(resetTarget.id);
+    try {
+      await onReset(resetTarget.id, { count: Number(resetCount), note: resetNote.trim() || undefined });
+      setResetTarget(null);
+    } catch (err) {
+      onError((err as Error).message);
+    } finally {
+      setPendingId(null);
+    }
+  };
+
   return {
     editingId,
     editName,
@@ -62,5 +87,13 @@ export function useParkingLotTable({ onUpdate, onDelete, onError }: Options) {
     requestDelete: setDeleteTarget,
     cancelDelete: () => setDeleteTarget(null),
     confirmDelete,
+    resetTarget,
+    resetCount,
+    setResetCount,
+    resetNote,
+    setResetNote,
+    requestReset,
+    cancelReset,
+    confirmReset,
   };
 }

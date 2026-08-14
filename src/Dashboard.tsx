@@ -24,6 +24,7 @@ export function Dashboard() {
     handleDeviceCreated,
     handleParkingLotUpdate,
     handleParkingLotDelete,
+    handleParkingLotReset,
     handleDeviceUpdate,
     handleDeviceDelete,
   } = useDashboard();
@@ -49,7 +50,7 @@ export function Dashboard() {
             />
             {user && (
               <Typography variant="body2" color="text.secondary">
-                {user.username}
+                {user.email}
               </Typography>
             )}
             <Button size="small" startIcon={<LogoutIcon />} onClick={() => logout()}>
@@ -71,6 +72,7 @@ export function Dashboard() {
               parkingLots={parkingLots.data ?? []}
               onUpdate={handleParkingLotUpdate}
               onDelete={handleParkingLotDelete}
+              onReset={handleParkingLotReset}
               onError={notifyError}
             />
           </Stack>

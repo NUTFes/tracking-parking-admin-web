@@ -1,26 +1,30 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
 import { useAuth } from "../auth/AuthContext";
 
 export function useLoginForm() {
-  const { login } = useAuth();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const { loginWithGoogle } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+  const handleGoogleCredential = async (idToken: string | undefined) => {
+    if (!idToken) {
+      setError("Googleからの応答が不正です");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
-      await login(username, password);
+      await loginWithGoogle(idToken);
     } catch {
-      setError("ユーザー名またはパスワードが正しくありません");
+      setError("このGoogleアカウントではログインできません（許可リストを確認してください）");
     } finally {
       setSubmitting(false);
     }
   };
 
-  return { username, setUsername, password, setPassword, error, submitting, handleSubmit };
+  const handleGoogleError = () => {
+    setError("Googleサインインに失敗しました");
+  };
+
+  return { error, submitting, handleGoogleCredential, handleGoogleError };
 }

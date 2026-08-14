@@ -20,7 +20,7 @@ export function useDashboard() {
 
   const handleRestart = async (deviceId: number) => {
     try {
-      await api.queueRestart(deviceId, user?.username ?? "admin-console");
+      await api.queueRestart(deviceId, user?.email ?? "admin-console");
       devices.refresh();
     } catch (err) {
       notifyError((err as Error).message);
@@ -39,6 +39,11 @@ export function useDashboard() {
 
   const handleParkingLotDelete = async (lotId: number) => {
     await api.deleteParkingLot(lotId);
+    parkingLots.refresh();
+  };
+
+  const handleParkingLotReset = async (lotId: number, input: { count: number; note?: string }) => {
+    await api.resetParkingLot(lotId, input);
     parkingLots.refresh();
   };
 
@@ -73,6 +78,7 @@ export function useDashboard() {
     handleDeviceCreated,
     handleParkingLotUpdate,
     handleParkingLotDelete,
+    handleParkingLotReset,
     handleDeviceUpdate,
     handleDeviceDelete,
   };

@@ -83,10 +83,10 @@ async function request<T>(path: string, init: RequestInit = {}, allowRetry = tru
 }
 
 export const authApi = {
-  login: async (username: string, password: string): Promise<void> => {
+  loginWithGoogle: async (idToken: string): Promise<void> => {
     const data = await request<TokenResponse>(
-      "/auth/login",
-      { method: "POST", body: JSON.stringify({ username, password }) },
+      "/auth/google",
+      { method: "POST", body: JSON.stringify({ id_token: idToken }) },
       false,
     );
     setAccessToken(data.access_token);
@@ -116,6 +116,8 @@ export const api = {
   updateParkingLot: (lotId: number, input: { name?: string; capacity?: number }) =>
     request<ParkingLot>(`/parking-lots/${lotId}`, { method: "PATCH", body: JSON.stringify(input) }),
   deleteParkingLot: (lotId: number) => request<void>(`/parking-lots/${lotId}`, { method: "DELETE" }),
+  resetParkingLot: (lotId: number, input: { count: number; note?: string }) =>
+    request<ParkingLot>(`/parking-lots/${lotId}/reset`, { method: "POST", body: JSON.stringify(input) }),
 
   listDevices: () => request<Device[]>("/devices"),
   createDevice: (input: { device_code: string; name?: string; parking_lot_id: number }) =>

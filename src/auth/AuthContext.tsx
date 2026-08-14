@@ -8,7 +8,7 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   isBootstrapping: boolean;
   user: AuthUser | null;
-  login: (username: string, password: string) => Promise<void>;
+  loginWithGoogle: (idToken: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -36,8 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated, user]);
 
-  const login = async (username: string, password: string) => {
-    await authApi.login(username, password);
+  const loginWithGoogle = async (idToken: string) => {
+    await authApi.loginWithGoogle(idToken);
   };
 
   const logout = async () => {
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isBootstrapping, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, isBootstrapping, user, loginWithGoogle, logout }}>
       {children}
     </AuthContext.Provider>
   );

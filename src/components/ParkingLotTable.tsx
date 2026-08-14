@@ -1,6 +1,12 @@
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -14,6 +20,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import type { ParkingLot } from "../api/types";
 import { useParkingLotTable } from "../hooks/useParkingLotTable";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -22,10 +29,11 @@ type Props = {
   parkingLots: ParkingLot[];
   onUpdate: (lotId: number, input: { name: string; capacity: number }) => Promise<void>;
   onDelete: (lotId: number) => Promise<void>;
+  onReset: (lotId: number, input: { count: number; note?: string }) => Promise<void>;
   onError: (message: string) => void;
 };
 
-export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onError }: Props) {
+export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onReset, onError }: Props) {
   const {
     editingId,
     editName,
@@ -40,7 +48,15 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onError }: Pr
     requestDelete,
     cancelDelete,
     confirmDelete,
-  } = useParkingLotTable({ onUpdate, onDelete, onError });
+    resetTarget,
+    resetCount,
+    setResetCount,
+    resetNote,
+    setResetNote,
+    requestReset,
+    cancelReset,
+    confirmReset,
+  } = useParkingLotTable({ onUpdate, onDelete, onReset, onError });
 
   return (
     <>
@@ -114,6 +130,17 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onError }: Pr
                       </>
                     ) : (
                       <>
+                        <Tooltip title="台数をリセット">
+                          <span>
+                            <IconButton
+                              size="small"
+                              disabled={pendingId !== null}
+                              onClick={() => requestReset(lot)}
+                            >
+                              <RestartAltIcon fontSize="small" />
+                            </IconButton>
+                          </span>
+                        </Tooltip>
                         <Tooltip title="編集">
                           <span>
                             <IconButton size="small" disabled={pendingId !== null} onClick={() => startEdit(lot)}>
@@ -149,6 +176,43 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onError }: Pr
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Dialog open={resetTarget !== null} onClose={cancelReset}>
+        <DialogTitle>駐車台数のリセット</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1, minWidth: 320 }}>
+            <TextField
+              label="リセット後の台数"
+              type="number"
+              value={resetCount}
+              onChange={(e) => setResetCount(e.target.value)}
+              autoFocus
+              size="small"
+              slotProps={{ htmlInput: { min: 0 } }}
+            />
+            <TextField
+              label="理由（任意）"
+              value={resetNote}
+              onChange={(e) => setResetNote(e.target.value)}
+              placeholder="実車確認による補正"
+              size="small"
+              multiline
+              minRows={2}
+            />
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelReset}>キャンセル</Button>
+          <Button
+            onClick={confirmReset}
+            variant="contained"
+            disabled={!resetCount || pendingId === resetTarget?.id}
+          >
+            リセット
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <ConfirmDialog
         open={deleteTarget !== null}
         title="駐車場の削除"
