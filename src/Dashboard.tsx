@@ -1,6 +1,7 @@
 import { Alert, AppBar, Box, Button, Chip, Container, Slide, Snackbar, Stack, Toolbar, Typography } from "@mui/material";
 import type { SlideProps } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { ActivityLogTable } from "./components/ActivityLogTable";
 import { ApiKeyReveal } from "./components/ApiKeyReveal";
 import { DeviceForm } from "./components/DeviceForm";
 import { DeviceTable } from "./components/DeviceTable";
@@ -20,6 +21,7 @@ export function Dashboard() {
     serverOnline,
     parkingLots,
     devices,
+    activities,
     revealedDevice,
     dismissRevealedDevice,
     notice,
@@ -101,6 +103,14 @@ export function Dashboard() {
               onDelete={handleDeviceDelete}
               onError={notifyError}
             />
+          </Stack>
+
+          <Stack spacing={2}>
+            <Typography variant="subtitle2" color="text.secondary">
+              活動ログ
+            </Typography>
+            {activities.error && <Alert severity="error">{activities.error}</Alert>}
+            <ActivityLogTable activities={activities.data ?? []} parkingLots={parkingLots.data ?? []} />
           </Stack>
         </Stack>
       </Container>

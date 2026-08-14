@@ -51,6 +51,17 @@ export type DeviceCommand = {
   completed_at: string | null;
 };
 
+export type ParkingActivity = {
+  id: number;
+  parking_lot_id: number;
+  activity_type: "entry" | "exit" | "manual_adjustment" | "reset" | "system_reset";
+  delta: number;
+  count_after: number;
+  actor_label: string;
+  note: string | null;
+  created_at: string;
+};
+
 export type HealthStatus = {
   status: string;
   database: string;

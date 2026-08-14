@@ -6,6 +6,7 @@ import type {
   DeviceCommand,
   DeviceCreated,
   HealthStatus,
+  ParkingActivity,
   ParkingLot,
   ResetTarget,
   TokenResponse,
@@ -122,6 +123,7 @@ export const api = {
     request<ParkingLot>(`/parking-lots/${lotId}/reset`, { method: "POST", body: JSON.stringify(input) }),
   resetAllParkingLots: (input: { target: ResetTarget; note?: string }) =>
     request<ParkingLot[]>("/parking-lots/reset-all", { method: "POST", body: JSON.stringify(input) }),
+  listAllActivities: () => request<ParkingActivity[]>("/parking-lots/activities"),
 
   listDevices: () => request<Device[]>("/devices"),
   createDevice: (input: { device_code: string; name?: string; parking_lot_id: number }) =>
