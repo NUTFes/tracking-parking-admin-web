@@ -1,3 +1,5 @@
+export type ResetTarget = "current" | "system";
+
 export type ParkingLot = {
   id: number;
   name: string;

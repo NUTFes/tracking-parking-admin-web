@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { api } from "../api/client";
 import { useAuth } from "../auth/AuthContext";
-import type { DeviceCreated } from "../api/types";
+import type { DeviceCreated, ResetTarget } from "../api/types";
 import { usePolling } from "./usePolling";
 
 const POLL_INTERVAL_MS = 5000;
@@ -42,8 +42,16 @@ export function useDashboard() {
     parkingLots.refresh();
   };
 
-  const handleParkingLotReset = async (lotId: number, input: { count: number; note?: string }) => {
+  const handleParkingLotReset = async (
+    lotId: number,
+    input: { count: number; target: ResetTarget; note?: string },
+  ) => {
     await api.resetParkingLot(lotId, input);
+    parkingLots.refresh();
+  };
+
+  const handleParkingLotResetAll = async (target: ResetTarget) => {
+    await api.resetAllParkingLots({ target });
     parkingLots.refresh();
   };
 
@@ -79,6 +87,7 @@ export function useDashboard() {
     handleParkingLotUpdate,
     handleParkingLotDelete,
     handleParkingLotReset,
+    handleParkingLotResetAll,
     handleDeviceUpdate,
     handleDeviceDelete,
   };

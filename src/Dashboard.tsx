@@ -25,6 +25,7 @@ export function Dashboard() {
     handleParkingLotUpdate,
     handleParkingLotDelete,
     handleParkingLotReset,
+    handleParkingLotResetAll,
     handleDeviceUpdate,
     handleDeviceDelete,
   } = useDashboard();
@@ -73,6 +74,7 @@ export function Dashboard() {
               onUpdate={handleParkingLotUpdate}
               onDelete={handleParkingLotDelete}
               onReset={handleParkingLotReset}
+              onResetAll={handleParkingLotResetAll}
               onError={notifyError}
             />
           </Stack>

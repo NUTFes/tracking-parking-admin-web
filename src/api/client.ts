@@ -6,6 +6,7 @@ import type {
   DeviceCreated,
   HealthStatus,
   ParkingLot,
+  ResetTarget,
   TokenResponse,
 } from "./types";
 
@@ -116,8 +117,10 @@ export const api = {
   updateParkingLot: (lotId: number, input: { name?: string; capacity?: number }) =>
     request<ParkingLot>(`/parking-lots/${lotId}`, { method: "PATCH", body: JSON.stringify(input) }),
   deleteParkingLot: (lotId: number) => request<void>(`/parking-lots/${lotId}`, { method: "DELETE" }),
-  resetParkingLot: (lotId: number, input: { count: number; note?: string }) =>
+  resetParkingLot: (lotId: number, input: { count: number; target: ResetTarget; note?: string }) =>
     request<ParkingLot>(`/parking-lots/${lotId}/reset`, { method: "POST", body: JSON.stringify(input) }),
+  resetAllParkingLots: (input: { target: ResetTarget; note?: string }) =>
+    request<ParkingLot[]>("/parking-lots/reset-all", { method: "POST", body: JSON.stringify(input) }),
 
   listDevices: () => request<Device[]>("/devices"),
   createDevice: (input: { device_code: string; name?: string; parking_lot_id: number }) =>
