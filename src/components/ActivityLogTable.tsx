@@ -32,8 +32,8 @@ export function ActivityLogTable({ activities, parkingLots }: Props) {
   const lotNameById = new Map(parkingLots.map((lot) => [lot.id, lot.name]));
 
   return (
-    <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3 }}>
-      <Table size="small">
+    <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3, maxHeight: 400, overflow: "auto" }}>
+      <Table size="small" stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>日時</TableCell>
