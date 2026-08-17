@@ -23,6 +23,7 @@ export function useDashboard() {
   const parkingLots = usePolling(api.listParkingLots, POLL_INTERVAL_MS);
   const devices = usePolling(api.listDevices, POLL_INTERVAL_MS);
   const activities = usePolling(api.listAllActivities, POLL_INTERVAL_MS);
+  const adminUsers = usePolling(api.listAdminUsers, POLL_INTERVAL_MS);
   const [revealedDevice, setRevealedDevice] = useState<DeviceCreated | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [commandNotice, setCommandNotice] = useState<CommandNotice | null>(null);
@@ -118,7 +119,7 @@ export function useDashboard() {
 
   const handleDeviceUpdate = async (
     deviceId: number,
-    input: { device_code: string; name: string; parking_lot_id: number },
+    input: { device_code: string; name?: string; parking_lot_id: number },
   ) => {
     await api.updateDevice(deviceId, input);
     devices.refresh();
@@ -127,6 +128,15 @@ export function useDashboard() {
   const handleDeviceDelete = async (deviceId: number) => {
     await api.deleteDevice(deviceId);
     devices.refresh();
+  };
+
+  const handleAdminUserCreated = () => {
+    adminUsers.refresh();
+  };
+
+  const handleAdminUserDelete = async (userId: number) => {
+    await api.deleteAdminUser(userId);
+    adminUsers.refresh();
   };
 
   const serverOnline = health.data?.status === "ok";
@@ -139,6 +149,7 @@ export function useDashboard() {
     parkingLots,
     devices,
     activities,
+    adminUsers,
     revealedDevice,
     dismissRevealedDevice,
     notice,
@@ -154,5 +165,7 @@ export function useDashboard() {
     handleParkingLotResetAll,
     handleDeviceUpdate,
     handleDeviceDelete,
+    handleAdminUserCreated,
+    handleAdminUserDelete,
   };
 }

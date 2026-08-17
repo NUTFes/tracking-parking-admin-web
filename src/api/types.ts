@@ -78,3 +78,11 @@ export type AuthUser = {
   id: number;
   email: string;
 };
+
+// An entry in the admin-web login allow-list (admin_users table). Anyone
+// whose verified Google account email is listed here can sign into admin-web.
+export type AdminUser = {
+  id: number;
+  email: string;
+  created_at: string;
+};

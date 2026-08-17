@@ -2,6 +2,8 @@ import { Alert, AppBar, Box, Button, Chip, Container, Slide, Snackbar, Stack, To
 import type { SlideProps } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { ActivityLogTable } from "./components/ActivityLogTable";
+import { AdminUserForm } from "./components/AdminUserForm";
+import { AdminUserTable } from "./components/AdminUserTable";
 import { ApiKeyReveal } from "./components/ApiKeyReveal";
 import { DeviceForm } from "./components/DeviceForm";
 import { DeviceTable } from "./components/DeviceTable";
@@ -22,6 +24,7 @@ export function Dashboard() {
     parkingLots,
     devices,
     activities,
+    adminUsers,
     revealedDevice,
     dismissRevealedDevice,
     notice,
@@ -37,6 +40,8 @@ export function Dashboard() {
     handleParkingLotResetAll,
     handleDeviceUpdate,
     handleDeviceDelete,
+    handleAdminUserCreated,
+    handleAdminUserDelete,
   } = useDashboard();
 
   return (
@@ -101,6 +106,19 @@ export function Dashboard() {
               onCommand={handleDeviceCommand}
               onUpdate={handleDeviceUpdate}
               onDelete={handleDeviceDelete}
+              onError={notifyError}
+            />
+          </Stack>
+
+          <Stack spacing={2}>
+            <Typography variant="subtitle2" color="text.secondary">
+              ユーザー管理
+            </Typography>
+            <AdminUserForm onCreated={handleAdminUserCreated} onError={notifyError} />
+            {adminUsers.error && <Alert severity="error">{adminUsers.error}</Alert>}
+            <AdminUserTable
+              users={adminUsers.data ?? []}
+              onDelete={handleAdminUserDelete}
               onError={notifyError}
             />
           </Stack>

@@ -1,5 +1,6 @@
 import { getAccessToken, setAccessToken } from "./authToken";
 import type {
+  AdminUser,
   AuthUser,
   CommandType,
   Device,
@@ -138,4 +139,9 @@ export const api = {
       body: JSON.stringify({ command_type: commandType, requested_by: requestedBy }),
     }),
   listCommands: (deviceId: number) => request<DeviceCommand[]>(`/devices/${deviceId}/commands`),
+
+  listAdminUsers: () => request<AdminUser[]>("/admin-users"),
+  createAdminUser: (input: { email: string }) =>
+    request<AdminUser>("/admin-users", { method: "POST", body: JSON.stringify(input) }),
+  deleteAdminUser: (userId: number) => request<void>(`/admin-users/${userId}`, { method: "DELETE" }),
 };
