@@ -31,7 +31,10 @@ type Props = {
   devices: Device[];
   parkingLots: ParkingLot[];
   onCommand: (deviceId: number, commandType: CommandType) => Promise<void>;
-  onUpdate: (deviceId: number, input: { device_code: string; name: string; parking_lot_id: number }) => Promise<void>;
+  onUpdate: (
+    deviceId: number,
+    input: { device_code: string; name?: string; parking_lot_id: number },
+  ) => Promise<void>;
   onDelete: (deviceId: number) => Promise<void>;
   onError: (message: string) => void;
 };

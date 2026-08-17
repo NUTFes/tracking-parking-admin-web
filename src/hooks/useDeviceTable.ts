@@ -3,7 +3,10 @@ import type { CommandType, Device } from "../api/types";
 
 type Options = {
   onCommand: (deviceId: number, commandType: CommandType) => Promise<void>;
-  onUpdate: (deviceId: number, input: { device_code: string; name: string; parking_lot_id: number }) => Promise<void>;
+  onUpdate: (
+    deviceId: number,
+    input: { device_code: string; name?: string; parking_lot_id: number },
+  ) => Promise<void>;
   onDelete: (deviceId: number) => Promise<void>;
   onError: (message: string) => void;
 };
@@ -46,7 +49,11 @@ export function useDeviceTable({ onCommand, onUpdate, onDelete, onError }: Optio
     try {
       await onUpdate(deviceId, {
         device_code: editDeviceCode.trim(),
-        name: editName.trim(),
+        // Match the create form's behavior (useDeviceForm.ts): an empty
+        // display name is sent as omitted, not "", so the server clears it
+        // to NULL and the table's `device.name ?? device.device_code`
+        // fallback keeps working instead of rendering a blank name.
+        name: editName.trim() || undefined,
         parking_lot_id: Number(editParkingLotId),
       });
       setEditingId(null);
