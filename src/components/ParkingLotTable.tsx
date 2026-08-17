@@ -78,7 +78,7 @@ export function ParkingLotTable({ parkingLots, onUpdate, onDelete, onReset, onRe
   return (
     <>
       <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3 }}>
-        <Table size="small">
+        <Table size="small" aria-label="駐車場一覧">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>

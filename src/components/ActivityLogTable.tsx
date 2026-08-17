@@ -33,7 +33,7 @@ export function ActivityLogTable({ activities, parkingLots }: Props) {
 
   return (
     <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3, maxHeight: 400, overflow: "auto" }}>
-      <Table size="small" stickyHeader>
+      <Table size="small" stickyHeader aria-label="活動ログ一覧">
         <TableHead>
           <TableRow>
             <TableCell>日時</TableCell>

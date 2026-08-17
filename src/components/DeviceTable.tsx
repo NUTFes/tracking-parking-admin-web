@@ -72,7 +72,7 @@ export function DeviceTable({ devices, parkingLots, onCommand, onUpdate, onDelet
   return (
     <>
       <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 3 }}>
-        <Table size="small">
+        <Table size="small" aria-label="デバイス一覧">
           <TableHead>
             <TableRow>
               <TableCell>デバイス</TableCell>
