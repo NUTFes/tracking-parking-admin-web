@@ -7,6 +7,10 @@ export type ParkingLot = {
   current_count: number;
   system_count: number;
   has_device: boolean;
+  // Campus-map pin position (0-100 percent of the image's width/height).
+  // null until placed — new lots default to centered (50/50) server-side.
+  x_percent: number | null;
+  y_percent: number | null;
   created_at: string;
 };
 

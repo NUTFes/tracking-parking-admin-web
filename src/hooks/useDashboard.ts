@@ -92,7 +92,10 @@ export function useDashboard() {
     devices.refresh();
   };
 
-  const handleParkingLotUpdate = async (lotId: number, input: { name: string; capacity: number }) => {
+  const handleParkingLotUpdate = async (
+    lotId: number,
+    input: { name?: string; capacity?: number; x_percent?: number; y_percent?: number },
+  ) => {
     await api.updateParkingLot(lotId, input);
     parkingLots.refresh();
   };

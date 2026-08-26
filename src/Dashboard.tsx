@@ -5,6 +5,7 @@ import { ActivityLogTable } from "./components/ActivityLogTable";
 import { AdminUserForm } from "./components/AdminUserForm";
 import { AdminUserTable } from "./components/AdminUserTable";
 import { ApiKeyReveal } from "./components/ApiKeyReveal";
+import { CampusMapEditor } from "./components/CampusMapEditor";
 import { DeviceForm } from "./components/DeviceForm";
 import { DeviceTable } from "./components/DeviceTable";
 import { ParkingLotForm } from "./components/ParkingLotForm";
@@ -83,6 +84,14 @@ export function Dashboard() {
             </Typography>
             <ParkingLotForm onCreated={parkingLots.refresh} onError={notifyError} />
             {parkingLots.error && <Alert severity="error">{parkingLots.error}</Alert>}
+            <CampusMapEditor
+              parkingLots={parkingLots.data ?? []}
+              onPositionChange={(lotId, x, y) =>
+                handleParkingLotUpdate(lotId, { x_percent: x, y_percent: y }).catch((err) =>
+                  notifyError((err as Error).message),
+                )
+              }
+            />
             <ParkingLotTable
               parkingLots={parkingLots.data ?? []}
               onUpdate={handleParkingLotUpdate}

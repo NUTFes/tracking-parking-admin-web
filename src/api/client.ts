@@ -117,7 +117,10 @@ export const api = {
   listParkingLots: () => request<ParkingLot[]>("/parking-lots"),
   createParkingLot: (input: { name: string; capacity: number }) =>
     request<ParkingLot>("/parking-lots", { method: "POST", body: JSON.stringify(input) }),
-  updateParkingLot: (lotId: number, input: { name?: string; capacity?: number }) =>
+  updateParkingLot: (
+    lotId: number,
+    input: { name?: string; capacity?: number; x_percent?: number; y_percent?: number },
+  ) =>
     request<ParkingLot>(`/parking-lots/${lotId}`, { method: "PATCH", body: JSON.stringify(input) }),
   deleteParkingLot: (lotId: number) => request<void>(`/parking-lots/${lotId}`, { method: "DELETE" }),
   resetParkingLot: (lotId: number, input: { count: number; target: ResetTarget; note?: string }) =>

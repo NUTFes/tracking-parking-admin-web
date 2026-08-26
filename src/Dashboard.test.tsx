@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Dashboard } from "./Dashboard";
@@ -113,13 +113,16 @@ describe("Dashboard", () => {
       current_count: 0,
       system_count: 0,
       has_device: false,
+      x_percent: 50,
+      y_percent: 50,
       created_at: "2026-08-15T00:00:00",
     };
     mockDashboardEndpoints({ parkingLots: [lot] });
     const created = { id: 1, device_code: "trapa-dev1", name: null, parking_lot_id: 1, api_key: "secret-key" };
     vi.spyOn(api, "createDevice").mockResolvedValue(created);
     renderDashboard();
-    await screen.findByText("第一駐車場");
+    // Now also rendered as a map-editor pin label, not just the table row.
+    await screen.findAllByText("第一駐車場");
 
     await user.type(screen.getByLabelText(/デバイスコード/), "trapa-dev1");
     await user.click(screen.getByLabelText(/設置先の駐車場/));
@@ -130,6 +133,72 @@ describe("Dashboard", () => {
 
     await user.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByText("secret-key")).not.toBeInTheDocument();
+  });
+
+  it("マップ上でピンをドラッグすると、その駐車場のx_percent/y_percentが更新されることを確認する", async () => {
+    Element.prototype.setPointerCapture = vi.fn();
+    Element.prototype.releasePointerCapture = vi.fn();
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      width: 1000,
+      height: 500,
+    } as DOMRect);
+    const lot: ParkingLot = {
+      id: 1,
+      name: "第一駐車場",
+      capacity: 10,
+      current_count: 0,
+      system_count: 0,
+      has_device: false,
+      x_percent: 20,
+      y_percent: 30,
+      created_at: "2026-08-15T00:00:00",
+    };
+    mockDashboardEndpoints({ parkingLots: [lot] });
+    vi.spyOn(api, "updateParkingLot").mockResolvedValue({ ...lot, x_percent: 60, y_percent: 80 });
+    renderDashboard();
+
+    const pin = await screen.findByRole("button", { name: "第一駐車場のピン" });
+    fireEvent.pointerDown(pin, { pointerId: 1, clientX: 200, clientY: 150 });
+    fireEvent.pointerMove(pin, { pointerId: 1, clientX: 600, clientY: 400 });
+    fireEvent.pointerUp(pin, { pointerId: 1, clientX: 600, clientY: 400 });
+
+    await waitFor(() => {
+      expect(api.updateParkingLot).toHaveBeenCalledWith(1, { x_percent: 60, y_percent: 80 });
+    });
+  });
+
+  it("ピンのドラッグでの位置更新に失敗すると、グローバル通知にエラーメッセージが表示されることを確認する", async () => {
+    Element.prototype.setPointerCapture = vi.fn();
+    Element.prototype.releasePointerCapture = vi.fn();
+    vi.spyOn(Element.prototype, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      top: 0,
+      width: 1000,
+      height: 500,
+    } as DOMRect);
+    const lot: ParkingLot = {
+      id: 1,
+      name: "第一駐車場",
+      capacity: 10,
+      current_count: 0,
+      system_count: 0,
+      has_device: false,
+      x_percent: 20,
+      y_percent: 30,
+      created_at: "2026-08-15T00:00:00",
+    };
+    mockDashboardEndpoints({ parkingLots: [lot] });
+    vi.spyOn(api, "updateParkingLot").mockRejectedValue(new Error("位置を更新できません"));
+    renderDashboard();
+
+    const pin = await screen.findByRole("button", { name: "第一駐車場のピン" });
+    fireEvent.pointerDown(pin, { pointerId: 1, clientX: 200, clientY: 150 });
+    fireEvent.pointerMove(pin, { pointerId: 1, clientX: 600, clientY: 400 });
+    fireEvent.pointerUp(pin, { pointerId: 1, clientX: 600, clientY: 400 });
+
+    expect(await screen.findByText("位置を更新できません")).toBeInTheDocument();
   });
 
   it("駐車場登録に失敗すると、グローバル通知（Snackbar）にエラーメッセージが表示されることを確認する", async () => {

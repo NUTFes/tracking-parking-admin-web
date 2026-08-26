@@ -11,6 +11,8 @@ const lots: ParkingLot[] = [
     current_count: 3,
     system_count: 3,
     has_device: true,
+    x_percent: 50,
+    y_percent: 50,
     created_at: "2026-08-15T00:00:00+09:00",
   },
 ];
