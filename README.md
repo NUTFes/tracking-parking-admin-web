@@ -15,7 +15,6 @@ React + Vite + MUI 製の管理コンソール。駐車場・エッジデバイ�
 ## フロントエンド開発
 
 ```bash
-cp .env.example .env   # VITE_API_BASE_URL・VITE_GOOGLE_CLIENT_ID
 npm install
 npm run dev -- --port 5174   # vite.config.tsのデフォルト5173との混同に注意し--portを指定
 npm run build                 # 型チェック + 本番ビルド
