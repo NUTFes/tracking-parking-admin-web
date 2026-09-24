@@ -1,6 +1,7 @@
 import { Alert, AppBar, Box, Button, Chip, Container, Slide, Snackbar, Stack, Toolbar, Typography } from "@mui/material";
 import type { SlideProps } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { ActivityLogExport } from "./components/ActivityLogExport";
 import { ActivityLogTable } from "./components/ActivityLogTable";
 import { AdminUserForm } from "./components/AdminUserForm";
 import { AdminUserTable } from "./components/AdminUserTable";
@@ -136,6 +137,7 @@ export function Dashboard() {
             <Typography variant="subtitle2" color="text.secondary">
               活動ログ
             </Typography>
+            <ActivityLogExport onError={notifyError} />
             {activities.error && <Alert severity="error">{activities.error}</Alert>}
             <ActivityLogTable activities={activities.data ?? []} parkingLots={parkingLots.data ?? []} />
           </Stack>

@@ -62,7 +62,9 @@ async function extractErrorMessage(response: Response): Promise<string> {
   return body || `エラーが発生しました（${response.status}）`;
 }
 
-async function request<T>(path: string, init: RequestInit = {}, allowRetry = true): Promise<T> {
+// Authenticated fetch that returns the raw Response once it's known to be
+// OK — shared by request<T> (JSON) and file downloads (Blob).
+async function send(path: string, init: RequestInit = {}, allowRetry = true): Promise<Response> {
   const token = getAccessToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -76,12 +78,17 @@ async function request<T>(path: string, init: RequestInit = {}, allowRetry = tru
   // Never applies to /auth/* itself, to avoid recursing into the refresh flow.
   if (response.status === 401 && allowRetry && !path.startsWith("/auth/")) {
     const refreshed = await performRefresh();
-    if (refreshed) return request<T>(path, init, false);
+    if (refreshed) return send(path, init, false);
   }
 
   if (!response.ok) {
     throw new Error(await extractErrorMessage(response));
   }
+  return response;
+}
+
+async function request<T>(path: string, init: RequestInit = {}, allowRetry = true): Promise<T> {
+  const response = await send(path, init, allowRetry);
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
@@ -128,6 +135,16 @@ export const api = {
   resetAllParkingLots: (input: { target: ResetTarget; note?: string }) =>
     request<ParkingLot[]>("/parking-lots/reset-all", { method: "POST", body: JSON.stringify(input) }),
   listAllActivities: () => request<ParkingActivity[]>("/parking-lots/activities"),
+  // Dates are YYYY-MM-DD (JST calendar days, both inclusive); an empty one
+  // leaves that side of the range open.
+  exportActivitiesCsv: async (range: { startDate: string; endDate: string }): Promise<Blob> => {
+    const params = new URLSearchParams();
+    if (range.startDate) params.set("start_date", range.startDate);
+    if (range.endDate) params.set("end_date", range.endDate);
+    const query = params.toString();
+    const response = await send(`/parking-lots/activities/export${query ? `?${query}` : ""}`);
+    return response.blob();
+  },
 
   listDevices: () => request<Device[]>("/devices"),
   createDevice: (input: { device_code: string; name?: string; parking_lot_id: number }) =>

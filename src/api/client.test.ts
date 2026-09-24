@@ -397,3 +397,29 @@ describe("api", () => {
     expect(init.method).toBe("DELETE");
   });
 });
+
+describe("api.exportActivitiesCsv()", () => {
+  it("指定した日付をクエリに付けてCSVをBlobとして取得することを確認する", async () => {
+    const blob = new Blob(["csv"], { type: "text/csv" });
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 200, blob: async () => blob } as unknown as Response);
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await api.exportActivitiesCsv({ startDate: "2026-09-01", endDate: "2026-09-03" });
+
+    expect(result).toBe(blob);
+    expect(fetchMock.mock.calls[0][0]).toMatch(
+      /\/parking-lots\/activities\/export\?start_date=2026-09-01&end_date=2026-09-03$/,
+    );
+  });
+
+  it("日付が未指定の場合はクエリを付けないことを確認する", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue({ ok: true, status: 200, blob: async () => new Blob() } as unknown as Response);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await api.exportActivitiesCsv({ startDate: "", endDate: "" });
+
+    expect(fetchMock.mock.calls[0][0]).toMatch(/\/parking-lots\/activities\/export$/);
+  });
+});
